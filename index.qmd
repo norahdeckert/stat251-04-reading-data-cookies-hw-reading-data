@@ -1,8 +1,8 @@
 ---
-title: "Chocolate Chip Cookies"
+title: "Homework 2"
 execute:
   error: true
-author: "Your Name"
+author: "Norah Deckert"
 output: html_document
 ---
 
@@ -12,6 +12,7 @@ First, read in the CSV data of cookie ingredients.
 Make sure that your end-result data has appropriate types for each column - these should match the types provided in the documentation in the README.md file.
 
 ```{r}
+
 
 ```
 
