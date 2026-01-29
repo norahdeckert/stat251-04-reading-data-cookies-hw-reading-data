@@ -12,7 +12,19 @@ First, read in the CSV data of cookie ingredients.
 Make sure that your end-result data has appropriate types for each column - these should match the types provided in the documentation in the README.md file.
 
 ```{r}
+library(skimr)
+library(readr)
+choc_chip_cookie_ingredients <- read_csv("choc_chip_cookie_ingredients.csv")
+skim(choc_chip_cookie_ingredients)
+skim(choc_chip_cookie_ingredients, Recipe_Index, Rating)
 
+#try to write a code to skim to find how many recipes were rated with a 0.8 or higher
+skim(choc_chip_cookie_ingredients, numeric(length(0.7)))
+Rating = function(choc_chip_cookie_ingredients, numeric)
+skim(choc_chip_cookie_ingredients, numeric = Rating(mean))
+skim(choc_chip_cookie_ingredients) |> print()
+
+#Using the skimr package, I aws able to find that about 50% of the ratings had an 87% rating of their cookie recipe or higher. I also found that the average cookie recipe rating was an 81.5%. The output included the console, a skim of numeric values, and a skim of categories. Furthermore, it showed histograms for the data and any missing data based on the parameters I put inside the skim.
 
 ```
 
@@ -35,11 +47,11 @@ Exploratory data analysis is the process of getting familiar with your dataset. 
 
 Generate at least 5 questions you might explore using this database of cookie ingredients.
 
-1.
-2. 
-3. 
-4. 
-5. 
+1.How many different recipes can be randomly generated using every ingredient?
+2. Which chocolate chip recipe has the highest overall rating?
+3. Which chocolate chip recipe uses the most ingredients overall and how does that affect the Rating?
+4. Does the difference in Recipe_Index correlate with the overall rating of the Recipe?
+5. What recipe is the easiest to make given its unit conversions (whole numbers, minimal ingredients) and how does that affect its Rating?
 
 
 ### Skimming the Data
