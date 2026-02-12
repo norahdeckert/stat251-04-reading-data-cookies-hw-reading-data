@@ -24,7 +24,7 @@ Rating = function(choc_chip_cookie_ingredients, numeric)
 skim(choc_chip_cookie_ingredients, numeric = Rating(mean))
 skim(choc_chip_cookie_ingredients) |> print()
 
-#Using the skimr package, I aws able to find that about 50% of the ratings had an 87% rating of their cookie recipe or higher. I also found that the average cookie recipe rating was an 81.5%. The output included the console, a skim of numeric values, and a skim of categories. Furthermore, it showed histograms for the data and any missing data based on the parameters I put inside the skim.
+#Using the skimr package, I was able to find that about 50% of the ratings had an 87% rating of their cookie recipe or higher. I also found that the average cookie recipe rating was an 81.5%. The output included the console, a skim of numeric values, and a skim of categories. Furthermore, it showed histograms for the data and any missing data based on the parameters I put inside the skim.
 
 ```
 
@@ -55,7 +55,7 @@ Generate at least 5 questions you might explore using this database of cookie in
 3. Which chocolate chip recipe uses the most ingredients overall and how does that affect the Rating?
 4. Does the difference in Recipe_Index correlate with the overall rating of the Recipe?
 5. Using the range from 0.0 to 0.1, what ingredients of chocolate chip recipes creates the highest rated chocolate chip recipe?
-
+6. How many chocolate chip recipes are missing ratings and how would this affect finding the best recipe?
 
 ### Skimming the Data
 
@@ -101,3 +101,6 @@ Using whatever plotting system you are comfortable with in R or python, see if y
 [Part 1] Create at least one plot (it doesn't have to be pretty) that showcases an interesting facet of the data.
 
 [Part 2] Write 2-3 sentences about what you can learn from that plot and what directions you might want to investigate from here.
+
+#
+#make sure to also find the 3 ingredients that tie for last
