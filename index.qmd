@@ -172,6 +172,26 @@ print(top20_ingredients)
 
 ```
 
+```{python}
+import pandas as pd
+df = pd.read_csv("choc_chip_cookie_ingredients.csv")
+total_recipes = df["Recipe_Index"].nunique()
+dedup = df[["Recipe_Index", "Ingredient"]].drop_duplicates()
+ingredient_props = (
+  dedup.groupby("Ingredient")
+  .size()
+  .reset_index(name = "recipe_count")
+)
+ingredient_props["proportion"] = (
+  ingredient_props["recipe_count"] / total_recipes
+)
+ingredient_props = ingredient_props.sort_values(
+  by = "proportion", ascending = False
+)
+top20_ingredients = ingredient_props.head(20)
+print(top20_ingredients)
+
+```
 [Part 2] Print out a character string that lists all of the ingredients that do not appear in at least 20 recipes.
 
 ```{r}
@@ -183,10 +203,16 @@ rare_ingredients <- ingredient_props %>%
 rare_string <- paste(rare_ingredients, collapse = ", ")
 cat(rare_string)
 
-
 ```
 
+```{python}
+rare_ingredients = ingredients_props.loc[
+  ingredient_props["recipe_count"] < 20, "Ingredient"
+]
+rare_string = ", ".join(rare_ingredients)
+print(rare_string)
 
+```
 
 ### Visualization
 
@@ -194,7 +220,51 @@ Using whatever plotting system you are comfortable with in R or python, see if y
 
 [Part 1] Create at least one plot (it doesn't have to be pretty) that showcases an interesting facet of the data.
 
+```{r}
+#ingredient prevalance top 20
+library(dplyr)
+library(readr)
+library(ggplot2)
+dr <- read_csv("choc_chip_cookie_ingredients.csv")
+total_recipes <- n_distinct(df$Recipe_Index)
+
+top20 <- df %>%
+  distinct(Recipe_Index, Ingredient) %>%
+  count(Ingredient, name = "recipe_count") %>%
+  mutate(proportion = recipe_count / total_recipes) %>%
+  arrange(desc(proportion)) %>%
+  slice_head(n = 20)
+
+ggplot(top20, aes(x = reorder(Ingredient, proportion), y = proportion)) + geom_col() + coord_flip() + labs(
+  title = "Top 20 Ingredients by Proportions of Recipes",
+  x = "Ingredient", 
+  y = "Proportion of recipes"
+)
+```
+
+```{r}
+#comparison between AllRecipes vs Epicurious vs Misc
+df_recipes <- df %>%
+  distinct(Recipe_Index, Rating) %>%
+  mutate(
+    Source = case_when(
+      grepl("^AR_", Recipe_Index) ~ "AllRecipes",
+      grepl("^E_", Recipe_Index) ~ "Epicurious", 
+      grepl("^Misc__", Recipe_Index) ~ "Misc",
+      TRUE ~ "Other"
+    )
+  )
+ggplot(df_recipes, aes(x = Source, y = Rating)) + geom_boxplot() + 
+  labs(
+    title = "Rating Distribution by Recipe Source",
+    x = "Source",
+    y = "Rating (0-1)"
+  )
+
+```
+
 [Part 2] Write 2-3 sentences about what you can learn from that plot and what directions you might want to investigate from here.
 
-#
-#make sure to also find the 3 ingredients that tie for last
+#The first bar chart shows that there are a few ingredients that appear in nearly all recipes, while other ingredients are not as common. This shows that all cookie recipes in the database have standard ingredients. The second boxplot compares ratings across recipe sources and whether one source has higher ratings compared to another. 
+
+
