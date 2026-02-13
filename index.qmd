@@ -28,10 +28,41 @@ skim(choc_chip_cookie_ingredients) |> print()
 
 ```
 
+cookies <- read.csv("choc_chip_cookie_ingredients.csv")
+cookies |> str()
+cookies |> filter(Recipe_Index == "AR_1")
+cookies |> group_by(Ingredient) |>
+  summarize(avg_rating = mean(Rating, na.rm=T), n=n(), missing_ratings = sum(is.na(Rating)))|>
+  arrange(desc(avg_rating)) |>
+  ggplot(aes(x = n - missing_ratings, y = avg_rating, label = Ingredient)) + geom_point()
+ggplotly()
+
+library(reticulate)
+py_install(c("skimpy", "numpy"))
+
 ```{python}
 import pandas as pd
+df = pd.read_csv("choc_chip_cookie_ingredients.csv")
+print(df.head())
+print(df.info())
+dtype_map = {
+  "Ingredient": "string",
+  "Text": "string",
+  "Recipe_Index": "string",
+  "Rating": "float64",
+  "Quantity":"float64",
+  "Unit":"float64"
+}
+for col, dt in dtype_map.items():
+  if col in df.columns:
+    df[col] = df[col].astype(dt)
+print(df.info())
+print(df.describe(include = "all"))
 
-
+count_high = (df["Rating"] >= 0.8).sum()
+total_non_missing = df["Rating"].notna().sum()
+prop_high = count_high / total_non_missing
+avg_rating = df["Rating"].mean()
 
 ```
 
@@ -69,18 +100,50 @@ Install both packages, and read the package documentation ([R](https://cran.r-pr
 
 
 ```{r}
+library(skimr)
+library(readr)
+library(dplyr)
 
+choc_chip_cookie_ingredients <- read_csv(
+  "choc_chip_cookie_ingredients.csv",
+  col_types = cols(Ingredient = col_character(), Text = col_character(), Recipe_Index = col_character(), Rating = col_double(), Quantity = col_double(), Unit = col_double()))
 
+skim(choc_chip_cookie_ingredients)
+skim(choc_chip_cookie_ingredients, Rating, Quantity)
+
+choc_chip_cookie_ingredients %>%
+  select(where(is.numeric)) %>%
+  skim() 
 
 ```
 
 ```{python}
+import pandas as pd
+from skimpy import skim
+import matplotlib.pyplot as plt
 
+df = pd.read_csv("choc_chip_cookie_ingredients.csv")
+dtype_map {
+   "Ingredient": "string",
+  "Text": "string",
+  "Recipe_Index": "string",
+  "Rating": "float64",
+  "Quantity":"float64",
+  "Unit":"float64"
+}
+for col, dt in dtype_map.items():
+  if col in df.columns:
+    df[col] = df[col].astype(dt)
+    
+skim(df)
+skim(df.select_dtypes(includes = "number"))
 
 
 ```
 
 [Part 2] Write 1-2 sentences about what you can tell from each summary display you generate. Did you discover anything new about the data?
+
+#Using the skimpy and skimr packages, I am able to generate summary statistics and identify missing data in the chocolate chip cookie recipe dataset. The numeric summary showed that the Rating values were closer to the higher end of the scale, but Quantity is pretty right skewed. This shows that the recipes in this dataset are mostly well-rated, but the Quantity of ingredients varies.
 
 ### Generating Tables
 
@@ -89,10 +152,41 @@ You may want to use the `dplyr` package in R (`group_by` or `count` functions), 
 
 [Part 1] Using R and Python, generate a table that shows what **proportion** of recipes contain each type of ingredient, for the most common 20 ingredients.
 
+```{r}
+#make a table of the top 20 ingredients
+library(dplyr)
+library(readr)
+df <- read_csv("choc_chip_cookie_ingredients.csv")
+#total unique recipes
+total_recipes <- n_distinct(df$Recipe_Index)
+
+ingredient_props <- df %>%
+  distinct(Recipe_Index, Ingredient) %>%
+  count(Ingredient, name = "recipe_count") %>%
+  mutate(proportion = recipe_count / total_recipes) %>%
+  arrange(desc(proportion))
+
+top20_ingredients <- ingredient_props %>%
+  slice_head(n = 20)
+print(top20_ingredients)
+
+```
+
 [Part 2] Print out a character string that lists all of the ingredients that do not appear in at least 20 recipes.
 
+```{r}
+#ingredients appearing in < 20 recipes
+rare_ingredients <- ingredient_props %>%
+  filter(recipe_count < 20) %>%
+  pull(Ingredient)
 
-(Delete this note, but you can include data values inline in markdown text by using backticks, at least in R. For instance, here is R's built in value for pi: `r pi`. Unfortunately, this doesn't work in python using the knitr markdown engine, but you can print the list out in python anyways using a code chunk.)
+rare_string <- paste(rare_ingredients, collapse = ", ")
+cat(rare_string)
+
+
+```
+
+
 
 ### Visualization
 
